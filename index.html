@@ -192,6 +192,35 @@ const factPool = [
   "Honey never spoils. Archaeologists have eaten 3000-year-old honey.",
   "Sharks existed before trees."
 ];
+
+  // FOCUS
+  const focusOverwhelm = [
+  "SYSTEM: stabilization mode active...\nIF mental load is high, THEN reduce input volume.\n→ pause everything for 5 minutes. no decisions.",
+  "SYSTEM: noise reduction engaged...\nIF everything feels urgent, THEN nothing is prioritized.\n→ pick one task only. ignore the rest.",
+  "SYSTEM: cognitive overload detected...\nIF thoughts are scattered, THEN stop adding new ones.\n→ sit down and breathe once before continuing.",
+  "SYSTEM: focus window initialized...\nIF too many inputs exist, THEN simplify environment.\n→ clear one small space or close unnecessary tabs.",
+  "SYSTEM: mental buffering active...\nIF overwhelm persists, THEN reduce complexity.\n→ do nothing except choosing the next single step."
+];
+  const focusAvoidance = [
+  "SYSTEM: resistance pattern detected...\nIF you are avoiding a task, THEN reduce its size.\n→ open it and work for 10 minutes only.",
+  "SYSTEM: initiation lock engaged...\nIF starting feels difficult, THEN remove expectations.\n→ begin without finishing in mind.",
+  "SYSTEM: friction reduction active...\nIF task feels too big, THEN split it.\n→ identify only the first visible action.",
+  "SYSTEM: delay loop detected...\nIF you keep postponing, THEN shorten commitment.\n→ set a 5–10 minute timer and start badly.",
+  "SYSTEM: action threshold lowered...\nIF motivation is missing, THEN rely on structure.\n→ open the task and do the smallest possible step."
+];
+  const focusLowEnergy = [
+  "SYSTEM: minimal load mode active...\nIF energy is low, THEN avoid optimization.\n→ do the easiest version of the task.",
+  "SYSTEM: clarity fallback engaged...\nIF you don't know what to do, THEN reduce options.\n→ choose one simple action and proceed.",
+  "SYSTEM: energy conservation mode...\nIF motivation is absent, THEN minimize friction.\n→ just open the relevant file or tool.",
+  "SYSTEM: guidance simplification active...\nIF direction is unclear, THEN start physical.\n→ tidy one small area or prepare workspace.",
+  "SYSTEM: reduced complexity state...\nIF thinking feels heavy, THEN act before thinking.\n→ do one small step immediately."
+];
+  const focusAll = [
+  ...focusOverwhelm,
+  ...focusAvoidance,
+  ...focusLowEnergy
+];
+    
   const messages = {
   random: [
     "Drink water.",
@@ -199,13 +228,7 @@ const factPool = [
     "Small step = valid progress.",
     "You are allowed to start messy."
   ],
-
-  focus: [
-    "One task. Not everything.",
-    "Start ugly, improve later.",
-    "5 minutes is enough to begin."
-  ],
-
+    
   taylor: [
     "You’re on your own kid… but like, in a productive way.",
     "It’s giving executive function recovery.",
@@ -291,6 +314,16 @@ if (statusMode) {
 
     laughStep = 1;
   }
+  if (input === "focus") {
+
+  const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
+
+  document.getElementById("output").innerText = pool;
+  document.getElementById("stats").innerText = "";
+
+  inputField.value = "";
+  return;
+}
 
   // STEP 1 → Output generieren
   let result = "";
