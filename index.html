@@ -113,10 +113,20 @@ function typeBoot(text) {
   }
 
   type();
+  
+let statusMode = false;
+let statusAnswers = [];
+let currentQuestion = 0;
 }
 
 // COMMAND SYSTEM
-const messages = {
+const questions = [
+  "How many hours did you sleep?",
+  "How many coffees did you have today?",
+  "How overwhelmed do you feel (0-10)?"
+];
+  
+  const messages = {
   random: [
     "Drink water.",
     "Open ONE tab, not 37.",
@@ -144,16 +154,36 @@ const messages = {
 };
 
 function runCommand() {
-  const input = document.getElementById("cmd").value.trim().toLowerCase();
+  const inputField = document.getElementById("cmd");
+  const input = inputField.value.trim().toLowerCase();
 
   let output = "";
 
   if (input === "status") {
-    document.getElementById("stats").innerText = getDopamineStatus();
-    document.getElementById("output").innerText = "";
-    return;
+  statusMode = true;
+  statusAnswers = [];
+  currentQuestion = 0;
+
+  document.getElementById("output").innerText = "> " + questions[currentQuestion];
+  document.getElementById("stats").innerText = "";
+  inputField.value = "";
+  return;
+}
+if (statusMode) {
+  statusAnswers.push(input);
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
+    document.getElementById("output").innerText = "> " + questions[currentQuestion];
+  } else {
+    statusMode = false;
+    document.getElementById("stats").innerText = generateStatus(statusAnswers);
+    document.getElementById("output").innerText = "> Status complete.";
   }
 
+  inputField.value = "";
+  return;
+}
   if (messages[input]) {
     const list = messages[input];
     output = list[Math.floor(Math.random() * list.length)];
@@ -174,20 +204,24 @@ function handleKey(event) {
 }
 
 // DOPAMINE SYSTEM (Update 4)
-function getDopamineStatus() {
-  const focus = Math.floor(Math.random() * 100);
-  const energy = Math.floor(Math.random() * 100);
-  const chaos = Math.floor(Math.random() * 100);
+function generateStatus(a) {
+  const sleep = parseFloat(a[0]) || 0;
+  const coffee = parseInt(a[1]) || 0;
+  const overwhelm = parseInt(a[2]) || 0;
+
+  let focus = Math.max(0, 100 - overwhelm * 10 + sleep * 5);
+  let energy = Math.max(0, 50 + sleep * 10 - coffee * 10);
+  let chaos = overwhelm * 10 + coffee * 5;
 
   let advice = "";
 
-  if (focus < 40) advice += "- Start very small\n";
-  if (energy < 40) advice += "- Coffee / break recommended\n";
-  if (chaos > 70) advice += "- Embrace chaos\n";
+  if (sleep < 6) advice += "- Low sleep detected → rest recommended\n";
+  if (coffee > 3) advice += "- High caffeine intake → consider break\n";
+  if (overwhelm > 6) advice += "- High cognitive load → reduce tasks\n";
 
   return `
-DOPAMINE STATUS
-----------------
+DOPAMINE STATUS (user-based)
+---------------------------
 Focus:  ${focus}%
 Energy: ${energy}%
 Chaos:  ${chaos}%
