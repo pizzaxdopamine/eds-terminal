@@ -149,7 +149,7 @@ function runCommand() {
   let output = "";
 
   if (input === "status") {
-    document.getElementById("stats").innerText = getStatus();
+    document.getElementById("stats").innerText = getDopamineStatus();
     document.getElementById("output").innerText = "";
     return;
   }
