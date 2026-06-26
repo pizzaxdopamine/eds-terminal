@@ -411,7 +411,6 @@ if (statusMode) {
  if (input === "swift") {
 
   swiftCount++;
-
   swiftMode = true;
 
   const song = swiftPool[Math.floor(Math.random() * swiftPool.length)];
@@ -419,13 +418,13 @@ if (statusMode) {
 
   // 🥚 EASTER EGG
   if (swiftCount >= 3) {
- const easterEggSong = {
+   const easterEggSong = {
     title: "All Too Well (10 Minute Version)",
     category: "Deep Recovery (Legacy Protocol)",
     reason: "Some emotional states require extended runtime.",
     action: "No alternative available.",
     link: "https://open.spotify.com/intl-de/track/5enxwA8aAbwZbf5qCHORXi?si=89c0435be92d4c74"
-};
+}
     
   currentSong = easterEggSong;
   
@@ -454,7 +453,7 @@ Actions:
   swiftCount = 0;
   inputField.value = "";
   return;
-};
+}
 
   document.getElementById("output").innerText =
 `SWIFT RECOVERY MODULE
