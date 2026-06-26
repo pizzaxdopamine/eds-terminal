@@ -271,7 +271,8 @@ const factPool = [
     action: "Continue without perfection.",
     link: "https://open.spotify.com/intl-de/track/7kt9e9LFSpN1zQtYEl19o1?si=a6aab9089db342e3"
   },
-  {
+];
+ const easterEggSong = {
     title: "All Too Well (10 Minute Version)",
     category: "Deep Recovery (Legacy Protocol)",
     reason: "Some emotional states require extended runtime.",
@@ -446,13 +447,11 @@ Reason:
 Some emotional states require extended runtime.
 
 Actions:
-1) Execute Audio Protocol (Spotify)
+1) Execute Spotify Audio Protocol
 2) Another Recommendation
 3) Exit`;
 
-    currentSong = {
-      link: "https://open.spotify.com/track/XXXX"
-    };
+ currentSong = easterEggSong;
 
     swiftCount = 0;
     inputField.value = "";
@@ -483,7 +482,7 @@ Suggested action:
 ${song.action}
 
 Actions:
-1) Execute Audio Protocol (Spotify)
+1) Execute Spotify Audio Protocol
 2) Another Recommendation
 3) Exit`;
 
@@ -525,7 +524,7 @@ Suggested action:
 ${song.action}
 
 Actions:
-1) Execute Audio Protocol (Spotify)
+1) Execute Spotify Audio Protocol
 2) Another Recommendation
 3) Exit`;
 
@@ -548,14 +547,14 @@ Actions:
   inputField.value = "";
   return;
 }
-// ENTER KEY (Update 1)
+// ENTER KEY
 function handleKey(event) {
   if (event.key === "Enter") {
     runCommand();
   }
 }
 
-// DOPAMINE SYSTEM (Update 4)
+// DOPAMINE STATUS SYSTEM
 function generateStatus(a) {
   const sleep = parseFloat(a[0]) || 0;
   const coffee = parseInt(a[1]) || 0;
