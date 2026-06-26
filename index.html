@@ -56,8 +56,9 @@
 <body>
 
 <div class="boot" id="boot"></div>
-<div id="main" style="display:none;"> 
 
+<div id="main" style="display:none;">
+  
   <h1>Emergency Dopamine System</h1>
 
   <p>
@@ -72,13 +73,16 @@
   Type command and press ENTER.
   </p>
 
-  <input id="cmd" placeholder="enter command..." onkeydown="handleKey(event)">
+
+  <input id="cmd" onkeydown="handleKey(event)">
   <button onclick="runCommand()">ENTER</button>
 
   <div id="output"></div>
+  <div id="stats"></div>
 
-  <div class="stats" id="stats"></div>
 </div>
+
+</body>
 
 
 <script>
