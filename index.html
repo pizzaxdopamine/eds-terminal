@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Dopamine System</title>
+  <title>Emergency Dopamine System</title>
 
   <style>
     body {
@@ -17,17 +17,28 @@
       margin-bottom: 20px;
     }
 
+    input {
+      background: black;
+      color: #00ff9f;
+      border: 1px solid #00ff9f;
+      padding: 8px;
+      font-family: monospace;
+      margin-top: 10px;
+    }
+
     button {
       background: black;
       color: #00ff9f;
       border: 1px solid #00ff9f;
-      padding: 10px;
+      padding: 8px;
       cursor: pointer;
       font-family: monospace;
+      margin-left: 5px;
     }
 
     #output {
       margin-top: 20px;
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -36,37 +47,36 @@
 
 <div class="boot" id="boot"></div>
 
+<h1>Emergency Dopamine System</h1>
 
+<p>
+Hello TG.<br><br>
+
+This system is designed to assist with executive function recovery,<br>
+dopamine regulation, and low-energy cognitive states.<br><br>
+
+Available commands:<br>
+random | laugh | focus | taylor<br><br>
+
+Type a command and press ENTER.
+</p>
+
+<input id="cmd" placeholder="enter command...">
+<button onclick="runCommand()">ENTER</button>
+
+<div id="output"></div>
 
 <script>
-const boot = `
+const bootText = `
 Booting Emergency Dopamine System...
-Checking executive function...
+Initializing cognitive support modules...
 ████████░░ 82%
 System ready.
 `;
 
-document.getElementById("boot").innerText = boot;
+document.getElementById("boot").innerText = bootText;
 
-const messages = [
-  "Drink water.",
-  "Open ONE tab, not 37.",
-  "You are allowed to start messy.",
-  "Small step = valid progress.",
-  "Taylor Swift approves this pause.",
-  "Your brain is buffering... please wait.",
-  "Progress > perfection."
-];
-
-<p>> Type command (random, laugh, focus, taylor):</p>
-
-<input id="cmd"
-  style="background:black;color:#00ff9f;border:1px solid #00ff9f;padding:8px;font-family:monospace;">
-
-<button onclick="runCommand()">ENTER</button>
-
-<div id="output"></div>
-  const messages = {
+const messages = {
   random: [
     "Drink water.",
     "Open ONE tab, not 37.",
