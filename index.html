@@ -272,6 +272,20 @@ const factPool = [
     link: "https://open.spotify.com/intl-de/track/7kt9e9LFSpN1zQtYEl19o1?si=a6aab9089db342e3"
   }
 ];
+  function getUnusedSwiftSong() {
+  let availableSongs = swiftPool.filter(song => !usedSwiftSongs.includes(song.title));
+
+  if (availableSongs.length === 0) {
+    usedSwiftSongs = [];
+    availableSongs = swiftPool;
+  }
+
+  const song = availableSongs[Math.floor(Math.random() * availableSongs.length)];
+
+  usedSwiftSongs.push(song.title);
+
+  return song;
+}
 
   const messages = {
   random: [
@@ -290,6 +304,8 @@ let laughStep = 0;
 let laughSelection = "";
 let swiftMode = false;
 let currentSong = null;
+let usedSwiftSongs = [];
+let swiftAction2Count = 0;
 let swiftCount = 0;
     
 function runCommand() {
@@ -484,16 +500,58 @@ Actions:
   }
 
   // 2 = NEW RECOMMENDATION
-  if (input === "2") {
+if (input === "2") {
 
-    const song = swiftPool[Math.floor(Math.random() * swiftPool.length)];
-    currentSong = song;
+  swiftAction2Count++;
+
+  if (swiftAction2Count >= 2) {
+
+    const easterEggSong = {
+      title: "All Too Well (10 Minute Version)",
+      category: "Deep Recovery (Legacy Protocol)",
+      reason: "Some emotional states require extended runtime.",
+      action: "No alternative available.",
+      link: "https://open.spotify.com/intl-de/track/5enxwA8aAbwZbf5qCHORXi?si=89c0435be92d4c74"
+    };
+
+    currentSong = easterEggSong;
 
     document.getElementById("output").innerText =
+`SYSTEM WARNING
+
+Repeated interaction pattern detected.
+
+Accessing restricted archive...
+██████████ 100%
+
+Recommendation:
+🎵 ${easterEggSong.title}
+
+Category:
+${easterEggSong.category}
+
+Reason:
+${easterEggSong.reason}
+
+Actions:
+1) Execute Spotify Audio Protocol
+2) Another Recommendation
+3) Exit`;
+
+    swiftAction2Count = 0;
+    inputField.value = "";
+    return;
+  }
+
+  const song = getUnusedSwiftSong();
+  currentSong = song;
+
+  document.getElementById("output").innerText =
 `SWIFT RECOVERY MODULE
 
 Switching protocol...
 
+New Recommendation:
 🎵 ${song.title}
 
 Category:
@@ -510,14 +568,15 @@ Actions:
 2) Another Recommendation
 3) Exit`;
 
-    inputField.value = "";
-    return;
-  }
+  inputField.value = "";
+  return;
+}
 
   // 3 = EXIT
   if (input === "3") {
     swiftMode = false;
     currentSong = null;
+    swiftAction2Count = 0;
 
     document.getElementById("output").innerText =
 "SWIFT RECOVERY MODULE closed.";
@@ -525,10 +584,6 @@ Actions:
     inputField.value = "";
     return;
   }
-
-  inputField.value = "";
-  return;
-}
 
   // FALLBACK / UNKNOWN COMMAND
     if (messages[input]) {
