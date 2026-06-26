@@ -97,6 +97,8 @@ function typeBoot(text) {
       document.getElementById("boot").innerText += text.charAt(i);
       i++;
       setTimeout(type, speed);
+    } else {
+      document.getElementById("main").style.display = "block";
     }
   }
 
