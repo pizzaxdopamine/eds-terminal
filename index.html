@@ -122,18 +122,82 @@ const questions = [
   "How overwhelmed do you feel (0-10)?"
 ];
   
+const laughMenu =
+`SYSTEM HUMOR ENGINE ONLINE
+
+Select interaction type:
+
+1) Roast Mode
+2) Dad Joke Mode
+3) Fun Facts
+4) Exit`;
+
+const roastPool = [
+  "You are currently delaying reality with great consistency.",
+  "Noted: avoidance pattern detected again.",
+  "This is not multitasking. This is organized procrastination.",
+  "Your productivity is technically present, but emotionally unavailable.",
+  "You opened this instead of doing the thing. Again.",
+  "This is less 'busy' and more 'strategically avoiding consequences'.",
+  "Your focus is in a different tab and refuses to return.",
+  "You are running on intentions and optimism. No execution detected.",
+  "You are not stuck. You are just repeatedly choosing the same outcome.",
+  "Your task list is longer than your follow-through history.",
+  "At this point, hesitation is your default operating system.",
+  "You are successfully simulating productivity without any output.",
+  "You keep refreshing your options instead of selecting one.",
+  "This is a very advanced form of doing nothing intentionally.",
+  "You are currently outsourcing discipline to future-you. Future-you has filed a complaint.",
+  "You said ‘just a quick break’. The system has recorded 3 hours.",
+  "The system notices your presence. It chooses not to comment further.",
+  "You are still here. Statistically unexpected, but noted."
+];
+
+const dadJokePool = [
+  "I have a joke about recursion, but I’ll tell it later… and later… and later.",
+  "My motivation is like a broken link — it looked promising.",
+  "I would make a productivity joke, but it’s still in the backlog.",
+  "I tried to schedule productivity, but it was fully booked.",
+  "My thoughts and I had a meeting. Nobody showed up.",
+  "I wrote a joke about deadlines, but I missed it.",
+  "I asked my brain for an update. It’s still loading.",
+  "My focus walked out and left a note saying 'be right back maybe'.",
+  "I tried to organize chaos. It became a recurring subscription.",
+  "I have a joke about procrastination, but I’ll tell it later.",
+  "I told my calendar a joke. It wasn’t scheduled for humor.",
+  "My attention span and I are no longer on speaking terms.",
+  "I tried to make a plan. The plan resigned immediately.",
+  "I asked my system for clarity. It returned a user manual in Latin.",
+  "This joke is still loading. Please wait… or don’t."
+];
+
+const factPool = [
+  "Octopuses have three hearts, but still manage to be more emotionally stable than most systems.",
+  "Crows can recognize human faces and hold grudges for years.",
+  "Wombats produce cube-shaped poop. Nature really said: optimization.",
+  "Your stomach gets a new lining every few days to avoid digesting itself.",
+  "Your brain sometimes deletes memories to save storage space. No confirmation dialog.",
+  "You are taller in the morning than at night due to spinal compression changes.",
+  "Humans share about 60% of their DNA with bananas. This explains a lot, actually.",
+  "Cleopatra lived closer in time to the invention of the iPhone than to the building of the Great Pyramid.",
+  "Ancient Romans used crushed mouse brains as toothpaste. This is not recommended by modern systems.",
+  "Bananas are technically berries. Strawberries are not. Reality is optional.",
+  "The shortest war lasted about 38 minutes. Humans are very efficient under pressure.",
+  "Lightning is five times hotter than the surface of the sun.",
+  "Some clouds weigh over a million kilograms, yet still float casually.",
+  "Fun fact: your attention span is currently running multiple background processes.",
+  "Fun fact: this system has no idea what it’s doing either, but continues confidently.",
+  "Fun fact: most decisions are made before you think you made them.",
+  "The human brain runs on roughly 20 watts of power. Less than a lightbulb.",
+  "Honey never spoils. Archaeologists have eaten 3000-year-old honey.",
+  "Sharks existed before trees."
+];
   const messages = {
   random: [
     "Drink water.",
     "Open ONE tab, not 37.",
     "Small step = valid progress.",
     "You are allowed to start messy."
-  ],
-
-  laugh: [
-    "Debugging: being the detective in a crime movie where you're also the murderer.",
-    "There are 10 types of people...",
-    "Why do programmers prefer dark mode? Because light attracts bugs."
   ],
 
   focus: [
@@ -150,12 +214,15 @@ const questions = [
 let statusMode = false;
 let statusAnswers = [];
 let currentQuestion = 0;
+let laughMode = false;
+let laughStep = 0;
+let laughSelection = "";
     
 };
 
 function runCommand() {
-  const inputField = document.getElementById("cmd");
-  const input = inputField.value.trim().toLowerCase();
+const input = document.getElementById("cmd").value.trim().toLowerCase();
+const inputField = document.getElementById("cmd");
 
   let output = "";
 
@@ -180,6 +247,72 @@ if (statusMode) {
     document.getElementById("stats").innerText = generateStatus(statusAnswers);
     document.getElementById("output").innerText = "> Status complete.";
   }
+
+  inputField.value = "";
+  return;
+}
+  if (input === "laugh") {
+  laughMode = true;
+  laughStep = 0;
+  laughSelection = "";
+
+  document.getElementById("output").innerText = laughMenu;
+  document.getElementById("stats").innerText = "";
+
+  inputField.value = "";
+  return;
+}
+  if (laughMode) {
+
+  // STEP 0 → Auswahl treffen
+  if (laughStep === 0) {
+
+    if (input === "1") {
+      laughSelection = "roast";
+    } 
+    else if (input === "2") {
+      laughSelection = "dad";
+    } 
+    else if (input === "3") {
+      laughSelection = "facts";
+    } 
+    else if (input === "4") {
+      laughMode = false;
+      laughStep = 0;
+      document.getElementById("output").innerText = "> exiting humor module.";
+      inputField.value = "";
+      return;
+    } 
+    else {
+      document.getElementById("output").innerText = "Invalid input. Use 1–4.";
+      inputField.value = "";
+      return;
+    }
+
+    laughStep = 1;
+  }
+
+  // STEP 1 → Output generieren
+  let result = "";
+
+  if (laughSelection === "roast") {
+    result = roastPool[Math.floor(Math.random() * roastPool.length)];
+  }
+
+  if (laughSelection === "dad") {
+    result = dadJokePool[Math.floor(Math.random() * dadJokePool.length)];
+  }
+
+  if (laughSelection === "facts") {
+    result = factPool[Math.floor(Math.random() * factPool.length)];
+  }
+
+  document.getElementById("output").innerText = result;
+
+  // Reset nach Ausgabe (wichtig!)
+  laughMode = false;
+  laughStep = 0;
+  laughSelection = "";
 
   inputField.value = "";
   return;
