@@ -147,16 +147,18 @@ function runCommand() {
   const input = document.getElementById("cmd").value.trim().toLowerCase();
 
   let output = "";
+
   if (input === "status") {
-  document.getElementById("stats").innerText = getDopamineStatus();
-  return;
-}
+    document.getElementById("stats").innerText = getStatus();
+    document.getElementById("output").innerText = "";
+    return;
+  }
 
   if (messages[input]) {
     const list = messages[input];
     output = list[Math.floor(Math.random() * list.length)];
   } else {
-    output = "Unknown command. Try: random, laugh, focus, taylor";
+    output = "Unknown command. Try: random, laugh, focus, taylor, status";
   }
 
   document.getElementById("output").innerText = "> " + output;
