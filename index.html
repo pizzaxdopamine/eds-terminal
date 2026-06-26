@@ -314,16 +314,6 @@ if (statusMode) {
 
     laughStep = 1;
   }
-  if (input === "focus") {
-
-  const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
-
-  document.getElementById("output").innerText = pool;
-  document.getElementById("stats").innerText = "";
-
-  inputField.value = "";
-  return;
-}
 
   // STEP 1 → Output generieren
   let result = "";
@@ -350,6 +340,16 @@ if (statusMode) {
   inputField.value = "";
   return;
 }
+  
+ if (input === "focus") {
+  const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
+
+  document.getElementById("output").innerText = pool;
+  document.getElementById("stats").innerText = "";
+
+  inputField.value = "";
+  return;
+} 
   if (messages[input]) {
     const list = messages[input];
     output = list[Math.floor(Math.random() * list.length)];
