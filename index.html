@@ -156,8 +156,10 @@ function runCommand() {
   }
 
   document.getElementById("output").innerText = "> " + output;
-
-  updateDopamine();
+}
+  if (input === "status") {
+  document.getElementById("stats").innerText = getDopamineStatus();
+  return;
 }
 
 // ENTER KEY (Update 1)
@@ -168,7 +170,7 @@ function handleKey(event) {
 }
 
 // DOPAMINE SYSTEM (Update 4)
-function updateDopamine() {
+function getDopamineStatus() {
   const focus = Math.floor(Math.random() * 100);
   const energy = Math.floor(Math.random() * 100);
   const chaos = Math.floor(Math.random() * 100);
@@ -179,8 +181,8 @@ function updateDopamine() {
   if (energy < 40) advice += "- Coffee / break recommended\n";
   if (chaos > 70) advice += "- Embrace chaos\n";
 
-  document.getElementById("stats").innerText =
-`DOPAMINE STATUS
+  return `
+DOPAMINE STATUS
 ----------------
 Focus:  ${focus}%
 Energy: ${energy}%
