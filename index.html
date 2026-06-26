@@ -36,9 +36,7 @@
 
 <div class="boot" id="boot"></div>
 
-<button onclick="run()">RUN: RANDOM DOPAMINE</button>
 
-<div id="output"></div>
 
 <script>
 const boot = `
@@ -60,9 +58,54 @@ const messages = [
   "Progress > perfection."
 ];
 
-function run() {
-  const msg = messages[Math.floor(Math.random() * messages.length)];
-  document.getElementById("output").innerText = msg;
+<p>> Type command (random, laugh, focus, taylor):</p>
+
+<input id="cmd"
+  style="background:black;color:#00ff9f;border:1px solid #00ff9f;padding:8px;font-family:monospace;">
+
+<button onclick="runCommand()">ENTER</button>
+
+<div id="output"></div>
+  const messages = {
+  random: [
+    "Drink water.",
+    "Open ONE tab, not 37.",
+    "Small step = valid progress.",
+    "You are allowed to start messy."
+  ],
+
+  laugh: [
+    "Debugging: being the detective in a crime movie where you're also the murderer.",
+    "There are 10 types of people...",
+    "Why do programmers prefer dark mode? Because light attracts bugs."
+  ],
+
+  focus: [
+    "One task. Not everything.",
+    "Start ugly, improve later.",
+    "5 minutes is enough to begin."
+  ],
+
+  taylor: [
+    "You’re on your own kid… but like, in a productive way.",
+    "It’s giving executive function recovery.",
+    "All too well (10 min version) = focus timer."
+  ]
+};
+
+function runCommand() {
+  const input = document.getElementById("cmd").value.trim().toLowerCase();
+
+  let output = "";
+
+  if (messages[input]) {
+    const list = messages[input];
+    output = list[Math.floor(Math.random() * list.length)];
+  } else {
+    output = "Unknown command. Try: random, laugh, focus, taylor";
+  }
+
+  document.getElementById("output").innerText = "> " + output;
 }
 </script>
 
