@@ -325,88 +325,73 @@ if (statusMode) {
 }
   // LAUGH
   if (input === "laugh") {
-  laughMode = true;
-  laughStep = 0;
-  laughSelection = "";
+    laughMode = true;
+    laughStep = 0;
+    laughSelection = "";
 
-  document.getElementById("output").innerText = laughMenu;
-  document.getElementById("stats").innerText = "";
+    document.getElementById("output").innerText = laughMenu;
+    document.getElementById("stats").innerText = "";
 
-  inputField.value = "";
-  return;
-}
+    inputField.value = "";
+    return;
+  }
+
   if (laughMode) {
 
-  if (laughStep === 0) {
+    if (laughStep === 0) {
 
-    if (input === "1") {
-      laughSelection = "roast";
-    } 
-    else if (input === "2") {
-      laughSelection = "dad";
-    } 
-    else if (input === "3") {
-      laughSelection = "facts";
-    } 
-    else if (input === "4") {
-      laughMode = false;
-      laughStep = 0;
-      document.getElementById("output").innerText = "> exiting humor module.";
-      inputField.value = "";
-      return;
-    } 
-    else {
-      document.getElementById("output").innerText = "Invalid input. Use 1–4.";
-      inputField.value = "";
-      return;
+      if (input === "1") laughSelection = "roast";
+      else if (input === "2") laughSelection = "dad";
+      else if (input === "3") laughSelection = "facts";
+      else if (input === "4") {
+        laughMode = false;
+        laughStep = 0;
+        document.getElementById("output").innerText = "> exiting humor module.";
+        inputField.value = "";
+        return;
+      } else {
+        document.getElementById("output").innerText = "Invalid input. Use 1–4.";
+        inputField.value = "";
+        return;
+      }
+
+      laughStep = 1;
     }
 
-    laughStep = 1;
+    let result = "";
+
+    if (laughSelection === "roast") {
+      result = roastPool[Math.floor(Math.random() * roastPool.length)];
+    }
+
+    if (laughSelection === "dad") {
+      result = dadJokePool[Math.floor(Math.random() * dadJokePool.length)];
+    }
+
+    if (laughSelection === "facts") {
+      result = factPool[Math.floor(Math.random() * factPool.length)];
+    }
+
+    document.getElementById("output").innerText = result;
+
+    laughMode = false;
+    laughStep = 0;
+    laughSelection = "";
+
+    inputField.value = "";
+    return;
   }
-
-  let result = "";
-
-  if (laughSelection === "roast") {
-    result = roastPool[Math.floor(Math.random() * roastPool.length)];
-  }
-
-  if (laughSelection === "dad") {
-    result = dadJokePool[Math.floor(Math.random() * dadJokePool.length)];
-  }
-
-  if (laughSelection === "facts") {
-    result = factPool[Math.floor(Math.random() * factPool.length)];
-  }
-
-  document.getElementById("output").innerText = result;
-
-  laughMode = false;
-  laughStep = 0;
-  laughSelection = "";
-
-  inputField.value = "";
-  return;
-}
+ 
   // FOCUS
- if (input === "focus") {
-  const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
+  if (input === "focus") {
+    const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
 
-  document.getElementById("output").innerText = pool;
-  document.getElementById("stats").innerText = "";
+    document.getElementById("output").innerText = pool;
+    document.getElementById("stats").innerText = "";
 
-  inputField.value = "";
-  return;
-} 
-  if (messages[input]) {
-    const list = messages[input];
-    output = list[Math.floor(Math.random() * list.length)];
-  } else {
-    output = "Unknown command. Try: random, laugh, focus, taylor, status";
+    inputField.value = "";
+    return;
   }
-
-  document.getElementById("output").innerText = "> " + output;
-  document.getElementById("stats").innerText = "";
-  document.getElementById("cmd").value = "";
 
 // SWIFT RECOVERY
  if (input === "swift") {
@@ -425,7 +410,7 @@ if (statusMode) {
     reason: "Some emotional states require extended runtime.",
     action: "No alternative available.",
     link: "https://open.spotify.com/intl-de/track/5enxwA8aAbwZbf5qCHORXi?si=89c0435be92d4c74"
-}
+};
     
   currentSong = easterEggSong;
   
@@ -447,7 +432,7 @@ Reason:
 ${easterEggSong.reason}
 
 Actions:
-1) Execute Audio Protocol (Spotify)
+1) Execute Spotify Audio Protocol
 2) Another Recommendation
 3) Exit`;
 
@@ -543,6 +528,21 @@ Actions:
 
   inputField.value = "";
   return;
+}
+
+  // FALLBACK / UNKNOWN COMMAND
+    if (messages[input]) {
+    const list = messages[input];
+    const output = list[Math.floor(Math.random() * list.length)];
+
+    document.getElementById("output").innerText = "> " + output;
+  } else {
+    document.getElementById("output").innerText =
+      "Unknown command. Try: random, laugh, focus, swift, status";
+  }
+
+  document.getElementById("stats").innerText = "";
+  inputField.value = "";
 }
 // ENTER KEY
 function handleKey(event) {
