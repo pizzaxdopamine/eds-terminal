@@ -599,12 +599,6 @@ Actions:
   document.getElementById("stats").innerText = "";
   inputField.value = "";
 }
-// ENTER KEY
-function handleKey(event) {
-  if (event.key === "Enter") {
-    runCommand();
-  }
-}
 
 // DOPAMINE STATUS SYSTEM
 function generateStatus(a) {
@@ -630,6 +624,12 @@ Energy: ${energy}%
 Chaos:  ${chaos}%
 
 ${advice}`;
+}
+  // ENTER KEY
+function handleKey(event) {
+  if (event.key === "Enter") {
+    runCommand();
+  }
 }
   }
 </script>
