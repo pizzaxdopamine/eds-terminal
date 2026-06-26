@@ -1,1 +1,70 @@
-<h1>Hello Dopamine System</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Dopamine System</title>
+
+  <style>
+    body {
+      background: black;
+      color: #00ff9f;
+      font-family: monospace;
+      padding: 30px;
+    }
+
+    .boot {
+      white-space: pre-line;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background: black;
+      color: #00ff9f;
+      border: 1px solid #00ff9f;
+      padding: 10px;
+      cursor: pointer;
+      font-family: monospace;
+    }
+
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="boot" id="boot"></div>
+
+<button onclick="run()">RUN: RANDOM DOPAMINE</button>
+
+<div id="output"></div>
+
+<script>
+const boot = `
+Booting Emergency Dopamine System...
+Checking executive function...
+████████░░ 82%
+System ready.
+`;
+
+document.getElementById("boot").innerText = boot;
+
+const messages = [
+  "Drink water.",
+  "Open ONE tab, not 37.",
+  "You are allowed to start messy.",
+  "Small step = valid progress.",
+  "Taylor Swift approves this pause.",
+  "Your brain is buffering... please wait.",
+  "Progress > perfection."
+];
+
+function run() {
+  const msg = messages[Math.floor(Math.random() * messages.length)];
+  document.getElementById("output").innerText = msg;
+}
+</script>
+
+</body>
+</html>
