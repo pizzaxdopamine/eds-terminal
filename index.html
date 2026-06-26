@@ -68,7 +68,7 @@
   dopamine regulation, and cognitive overload management.<br><br>
 
   Available commands:<br>
-  status | laugh | focus | taylor | random<br><br>
+  status | laugh | focus | swift | random<br><br>
 
   Type command and press ENTER.
   </p>
@@ -220,19 +220,71 @@ const factPool = [
   ...focusAvoidance,
   ...focusLowEnergy
 ];
-    
+  // SWIFT RECOVERY
+    const swiftPool = [
+  {
+    title: "Clean",
+    category: "Recovery",
+    reason: "Progress is often only visible in hindsight.",
+    action: "Take a short break before continuing.",
+    link: "https://open.spotify.com/intl-de/track/2ByBBvpR9b7IynvRmnG7kG?si=f86df470f1574a40"
+  },
+  {
+    title: "You're On Your Own, Kid",
+    category: "Growth",
+    reason: "Self-reliance is not the same as isolation.",
+    action: "Do one small thing just for yourself.",
+    link: "https://open.spotify.com/intl-de/track/4D7BCuvgdJlYvlX5WlN54t?si=a86f46d17f164f3d"
+  },
+  {
+    title: "Begin Again",
+    category: "Reset",
+    reason: "Starting over does not mean failure.",
+    action: "Open the task you avoided.",
+    link: "https://open.spotify.com/intl-de/track/05GsNucq8Bngd9fnd4fRa0?si=e867da746d554794"
+  },
+  {
+    title: "The Archer",
+    category: "Reflection",
+    reason: "Uncertainty is part of awareness.",
+    action: "Pause before reacting.",
+    link: "https://open.spotify.com/intl-de/track/3pHkh7d0lzM2AldUtz2x37?si=b4f579f3b30c4ddf"
+  },
+  {
+    title: "Long Live",
+    category: "Perspective",
+    reason: "Not everything small stays small in memory.",
+    action: "Recall one thing you handled well recently.",
+    link: "https://open.spotify.com/intl-de/track/4hqJ4bSlYJOXb6Z4SRmzxs?si=1dddc0762bba4b47"
+  },
+  {
+    title: "Shake It Off",
+    category: "Reset",
+    reason: "Not every input requires internalization.",
+    action: "Move your body for a moment.",
+    link: "https://open.spotify.com/intl-de/track/0cqRj7pUJDkTCEsJkx8snD?si=d986aa83b3be4664"
+  },
+  {
+    title: "this is me trying",
+    category: "Support",
+    reason: "Effort does not require visibility to count.",
+    action: "Continue without perfection.",
+    link: "https://open.spotify.com/intl-de/track/7kt9e9LFSpN1zQtYEl19o1?si=a6aab9089db342e3"
+  },
+  {
+    title: "All Too Well (10 Minute Version)",
+    category: "Deep Recovery (Legacy Protocol)",
+    reason: "Some emotional states require extended runtime.",
+    action: "No alternative available.",
+    link: "https://open.spotify.com/intl-de/track/5enxwA8aAbwZbf5qCHORXi?si=89c0435be92d4c74"
+}
+];
   const messages = {
   random: [
     "Drink water.",
     "Open ONE tab, not 37.",
     "Small step = valid progress.",
     "You are allowed to start messy."
-  ],
-    
-  taylor: [
-    "You’re on your own kid… but like, in a productive way.",
-    "It’s giving executive function recovery.",
-    "All too well (10 min version) = focus timer."
   ]
 };
     
@@ -242,13 +294,16 @@ let currentQuestion = 0;
 let laughMode = false;
 let laughStep = 0;
 let laughSelection = "";
+let swiftMode = false;
+let currentSong = null;
+let swiftCount = 0;
     
 function runCommand() {
 const input = document.getElementById("cmd").value.trim().toLowerCase();
 const inputField = document.getElementById("cmd");
 
   let output = "";
-
+// STATUS CHECK
   if (input === "status") {
   statusMode = true;
   statusAnswers = [];
@@ -274,6 +329,7 @@ if (statusMode) {
   inputField.value = "";
   return;
 }
+  // LAUGH
   if (input === "laugh") {
   laughMode = true;
   laughStep = 0;
@@ -287,7 +343,6 @@ if (statusMode) {
 }
   if (laughMode) {
 
-  // STEP 0 → Auswahl treffen
   if (laughStep === 0) {
 
     if (input === "1") {
@@ -315,7 +370,6 @@ if (statusMode) {
     laughStep = 1;
   }
 
-  // STEP 1 → Output generieren
   let result = "";
 
   if (laughSelection === "roast") {
@@ -332,7 +386,6 @@ if (statusMode) {
 
   document.getElementById("output").innerText = result;
 
-  // Reset nach Ausgabe (wichtig!)
   laughMode = false;
   laughStep = 0;
   laughSelection = "";
@@ -340,7 +393,7 @@ if (statusMode) {
   inputField.value = "";
   return;
 }
-  
+  // FOCUS
  if (input === "focus") {
   const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
 
@@ -361,7 +414,140 @@ if (statusMode) {
   document.getElementById("stats").innerText = "";
   document.getElementById("cmd").value = "";
 }
+// SWIFT RECOVERY
+ if (input === "swift") {
 
+  swiftCount++;
+
+  swiftMode = true;
+
+  const song = swiftPool[Math.floor(Math.random() * swiftPool.length)];
+  currentSong = song;
+
+  // 🥚 EASTER EGG
+  if (swiftCount >= 3) {
+
+    document.getElementById("output").innerText =
+`SYSTEM WARNING
+
+Repeated recovery requests detected.
+
+Accessing restricted archive...
+██████████ 100%
+
+Recommendation:
+
+🎵 All Too Well (10 Minute Version)
+
+Category:
+Deep Recovery (Legacy Protocol)
+
+Reason:
+Some emotional states require extended runtime.
+
+Actions:
+1) Execute Audio Protocol (Spotify)
+2) Another Recommendation
+3) Exit`;
+
+    currentSong = {
+      link: "https://open.spotify.com/track/XXXX"
+    };
+
+    swiftCount = 0;
+    inputField.value = "";
+    return;
+  }
+
+  document.getElementById("output").innerText =
+`SWIFT RECOVERY MODULE
+
+Accessing recovery archive...
+██████████ 100%
+
+No emotional telemetry available.
+
+Switching to universal recovery protocol...
+
+Recommendation:
+
+🎵 ${song.title}
+
+Category:
+${song.category}
+
+Reason:
+${song.reason}
+
+Suggested action:
+${song.action}
+
+Actions:
+1) Execute Audio Protocol (Spotify)
+2) Another Recommendation
+3) Exit`;
+
+  inputField.value = "";
+  return;
+}
+  if (swiftMode) {
+
+  // 1 = PLAY SPOTIFY
+  if (input === "1") {
+    if (currentSong?.link) {
+      window.open(currentSong.link, "_blank");
+    }
+
+    inputField.value = "";
+    return;
+  }
+
+  // 2 = NEW RECOMMENDATION
+  if (input === "2") {
+
+    const song = swiftPool[Math.floor(Math.random() * swiftPool.length)];
+    currentSong = song;
+
+    document.getElementById("output").innerText =
+`SWIFT RECOVERY MODULE
+
+Switching protocol...
+
+🎵 ${song.title}
+
+Category:
+${song.category}
+
+Reason:
+${song.reason}
+
+Suggested action:
+${song.action}
+
+Actions:
+1) Execute Audio Protocol (Spotify)
+2) Another Recommendation
+3) Exit`;
+
+    inputField.value = "";
+    return;
+  }
+
+  // 3 = EXIT
+  if (input === "3") {
+    swiftMode = false;
+    currentSong = null;
+
+    document.getElementById("output").innerText =
+"SWIFT RECOVERY MODULE closed.";
+
+    inputField.value = "";
+    return;
+  }
+
+  inputField.value = "";
+  return;
+}
 // ENTER KEY (Update 1)
 function handleKey(event) {
   if (event.key === "Enter") {
