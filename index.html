@@ -61,7 +61,7 @@ random | laugh | focus | taylor<br><br>
 Type a command and press ENTER.
 </p>
 
-<input id="cmd" placeholder="enter command...">
+<input id="cmd" placeholder="enter command..." onkeydown="handleKey(event)">
 <button onclick="runCommand()">ENTER</button>
 
 <div id="output"></div>
@@ -74,7 +74,7 @@ Initializing cognitive support modules...
 System ready.
 `;
 
-document.getElementById("boot").innerText = bootText;
+document.getElementById("boot").innerText = typeBoot(bootText);
 
 const messages = {
   random: [
@@ -102,6 +102,24 @@ const messages = {
     "All too well (10 min version) = focus timer."
   ]
 };
+  function getDopamineLevel() {
+  const focus = Math.floor(Math.random() * 100);
+  const energy = Math.floor(Math.random() * 100);
+  const chaos = Math.floor(Math.random() * 100);
+
+  return `
+DOPAMINE STATUS REPORT
+----------------------
+Focus:   ${focus}%
+Energy:  ${energy}%
+Chaos:   ${chaos}%
+
+Recommendation:
+${focus < 40 ? "- Start small\n" : ""}
+${energy < 40 ? "- Coffee recommended\n" : ""}
+${chaos > 70 ? "- Accept chaos\n" : ""}
+`;
+}
 
 function runCommand() {
   const input = document.getElementById("cmd").value.trim().toLowerCase();
@@ -116,6 +134,25 @@ function runCommand() {
   }
 
   document.getElementById("output").innerText = "> " + output;
+}
+  function handleKey(event) {
+  if (event.key === "Enter") {
+    runCommand();
+  }
+}
+  function typeBoot(text) {
+  let i = 0;
+  let speed = 15;
+
+  function type() {
+    if (i < text.length) {
+      document.getElementById("boot").innerText += text.charAt(i);
+      i++;
+      setTimeout(type, speed);
+    }
+  }
+
+  type();
 }
 </script>
 
