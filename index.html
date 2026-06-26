@@ -95,15 +95,18 @@ Loading dopamine stabilizer...
 System ready.
 `;
 
+window.onload = function () {
+  typeBoot(bootText);
+};
+
 function typeBoot(text) {
   let i = 0;
-  let speed = 30;
 
   function type() {
     if (i < text.length) {
       document.getElementById("boot").innerText += text.charAt(i);
       i++;
-      setTimeout(type, speed);
+      setTimeout(type, 30);
     } else {
       document.getElementById("main").style.display = "block";
     }
@@ -111,8 +114,6 @@ function typeBoot(text) {
 
   type();
 }
-
-typeBoot(bootText);
 
 // COMMAND SYSTEM
 const messages = {
