@@ -147,6 +147,10 @@ function runCommand() {
   const input = document.getElementById("cmd").value.trim().toLowerCase();
 
   let output = "";
+  if (input === "status") {
+  document.getElementById("stats").innerText = getDopamineStatus();
+  return;
+}
 
   if (messages[input]) {
     const list = messages[input];
@@ -156,10 +160,6 @@ function runCommand() {
   }
 
   document.getElementById("output").innerText = "> " + output;
-}
-  if (input === "status") {
-  document.getElementById("stats").innerText = getDopamineStatus();
-  return;
 }
 
 // ENTER KEY (Update 1)
