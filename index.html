@@ -136,9 +136,7 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
-
 ████████░░ 82%
-
 System ready.
 `;
 
@@ -357,7 +355,14 @@ const inputField = document.getElementById("cmd");
   statusAnswers = [];
   currentQuestion = 0;
 
-  document.getElementById("output").innerText = "> " + questions[currentQuestion];
+  document.getElementById("output").innerText =
+`STATUS CHECK INITIATED
+
+3 questions incoming. Type your answer, then press ENTER.
+Afterwards the system calculates focus, energy and chaos levels.
+Medical accuracy: none. Peer review: also none.
+
+> Question 1/${questions.length}: ${questions[currentQuestion]}`;
   document.getElementById("stats").innerText = "";
   inputField.value = "";
   return;
@@ -367,7 +372,8 @@ if (statusMode) {
   currentQuestion++;
 
   if (currentQuestion < questions.length) {
-    document.getElementById("output").innerText = "> " + questions[currentQuestion];
+    document.getElementById("output").innerText =
+      `> Question ${currentQuestion + 1}/${questions.length}: ${questions[currentQuestion]}`;
   } else {
     statusMode = false;
     document.getElementById("stats").innerText = generateStatus(statusAnswers);
@@ -680,7 +686,8 @@ Focus:  ${focus}%
 Energy: ${energy}%
 Chaos:  ${chaos}%
 
-${advice}`;
+${advice}
+(As previously disclosed: not medical advice. Not even close.)`;
 }
   // ENTER KEY
 function handleKey(event) {
