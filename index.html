@@ -136,9 +136,7 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
-
 ████████░░ 82%
-
 System ready.
 `;
 
@@ -242,31 +240,46 @@ const factPool = [
 
   // FOCUS
   const focusOverwhelm = [
-  "SYSTEM: stabilization mode active...\nIF mental load is high, THEN reduce input volume.\n→ pause everything for 5 minutes. no decisions.",
-  "SYSTEM: noise reduction engaged...\nIF everything feels urgent, THEN nothing is prioritized.\n→ pick one task only. ignore the rest.",
-  "SYSTEM: cognitive overload detected...\nIF thoughts are scattered, THEN stop adding new ones.\n→ sit down and breathe once before continuing.",
-  "SYSTEM: focus window initialized...\nIF too many inputs exist, THEN simplify environment.\n→ clear one small space or close unnecessary tabs.",
-  "SYSTEM: mental buffering active...\nIF overwhelm persists, THEN reduce complexity.\n→ do nothing except choosing the next single step."
+  "IF mental load is high, THEN reduce input volume.\n→ pause everything for 5 minutes. no decisions.",
+  "IF everything feels urgent, THEN nothing is prioritized.\n→ pick one task only. ignore the rest.",
+  "IF thoughts are scattered, THEN stop adding new ones.\n→ sit down and breathe once before continuing.",
+  "IF too many inputs exist, THEN simplify environment.\n→ clear one small space or close unnecessary tabs.",
+  "IF overwhelm persists, THEN reduce complexity.\n→ do nothing except choosing the next single step."
 ];
   const focusAvoidance = [
-  "SYSTEM: resistance pattern detected...\nIF you are avoiding a task, THEN reduce its size.\n→ open it and work for 10 minutes only.",
-  "SYSTEM: initiation lock engaged...\nIF starting feels difficult, THEN remove expectations.\n→ begin without finishing in mind.",
-  "SYSTEM: friction reduction active...\nIF task feels too big, THEN split it.\n→ identify only the first visible action.",
-  "SYSTEM: delay loop detected...\nIF you keep postponing, THEN shorten commitment.\n→ set a 5–10 minute timer and start badly.",
-  "SYSTEM: action threshold lowered...\nIF motivation is missing, THEN rely on structure.\n→ open the task and do the smallest possible step."
+  "IF you are avoiding a task, THEN reduce its size.\n→ open it and work for 10 minutes only.",
+  "IF starting feels difficult, THEN remove expectations.\n→ begin without finishing in mind.",
+  "IF task feels too big, THEN split it.\n→ identify only the first visible action.",
+  "IF you keep postponing, THEN shorten commitment.\n→ set a 5–10 minute timer and start badly.",
+  "IF motivation is missing, THEN rely on structure.\n→ open the task and do the smallest possible step."
 ];
   const focusLowEnergy = [
-  "SYSTEM: minimal load mode active...\nIF energy is low, THEN avoid optimization.\n→ do the easiest version of the task.",
-  "SYSTEM: clarity fallback engaged...\nIF you don't know what to do, THEN reduce options.\n→ choose one simple action and proceed.",
-  "SYSTEM: energy conservation mode...\nIF motivation is absent, THEN minimize friction.\n→ just open the relevant file or tool.",
-  "SYSTEM: guidance simplification active...\nIF direction is unclear, THEN start physical.\n→ tidy one small area or prepare workspace.",
-  "SYSTEM: reduced complexity state...\nIF thinking feels heavy, THEN act before thinking.\n→ do one small step immediately."
+  "IF energy is low, THEN avoid optimization.\n→ do the easiest version of the task.",
+  "IF you don't know what to do, THEN reduce options.\n→ choose one simple action and proceed.",
+  "IF motivation is absent, THEN minimize friction.\n→ just open the relevant file or tool.",
+  "IF direction is unclear, THEN start physical.\n→ tidy one small area or prepare workspace.",
+  "IF thinking feels heavy, THEN act before thinking.\n→ do one small step immediately."
 ];
-  const focusAll = [
-  ...focusOverwhelm,
-  ...focusAvoidance,
-  ...focusLowEnergy
+
+  const focusCategories = [
+  {
+    name: "OVERWHELM",
+    scanLine: "Too many open processes. Recommend closing a few (mentally or literally).",
+    pool: focusOverwhelm
+  },
+  {
+    name: "AVOIDANCE",
+    scanLine: "Elaborate task-avoidance architecture detected. Impressive, actually.",
+    pool: focusAvoidance
+  },
+  {
+    name: "LOW ENERGY",
+    scanLine: "Battery level: concerning. Expectations adjusted accordingly.",
+    pool: focusLowEnergy
+  }
 ];
+
+
   // SWIFT RECOVERY
     const swiftPool = [
   {
@@ -347,13 +360,12 @@ let usedSwiftSongs = [];
 let swiftAction2Count = 0;
 let swiftCount = 0;
 
-const focusMenu =
-`What next?
-
-1) Another tip
-2) status
-3) laugh
-4) swift`;
+const scanFailReasons = [
+  "Subject blinked at critical moment.",
+  "Subject looked away during scan.",
+  "Camera obstructed. Possible causes: hand, hair, existential dread.",
+  "Eye contact lost mid-scan. Re-acquiring is optional."
+];
 
 function resetModes() {
   statusMode = false;
@@ -362,7 +374,7 @@ function resetModes() {
   swiftMode = false;
 }
 
-// Short "loading" animation before revealing a joke or a focus tip.
+// Short "loading" animation before revealing a joke.
 function loadThenShow(mainText, trailingText) {
   const outputEl = document.getElementById("output");
   const frames = ["Loading.", "Loading..", "Loading..."];
@@ -377,6 +389,59 @@ function loadThenShow(mainText, trailingText) {
       outputEl.innerText =
         mainText + "\n\nCompleted." + (trailingText ? "\n\n" + trailingText : "");
     }
+  }
+
+  step();
+}
+
+// Mock "scan" before revealing a focus tip, so the random pick comes with an explanation.
+// Small chance the scan aborts instead, as if it actually needed to see you.
+function scanThenShow(category, tip) {
+  const outputEl = document.getElementById("output");
+  const frames = [
+    { text: "SCANNING HUMAN...\nPlease do not look away during scanning process.", delay: 1300 },
+    { text: "SCANNING HUMAN...\nPlease do not look away during scanning process.\n\nAnalyzing behavioral signature...", delay: 1500 }
+  ];
+  const scanFailed = Math.random() < 0.12;
+  let i = 0;
+
+  function step() {
+    if (i < frames.length) {
+      outputEl.innerText = frames[i].text;
+      const delay = frames[i].delay;
+      i++;
+      setTimeout(step, delay);
+      return;
+    }
+
+    if (scanFailed) {
+      const reason = scanFailReasons[Math.floor(Math.random() * scanFailReasons.length)];
+      outputEl.innerText =
+`SCAN ABORTED.
+Reason: ${reason}
+
+FOCUS SUPPORT SYSTEM: no result. What next?
+
+1) Retry scan
+2) status
+3) laugh
+4) swift`;
+      return;
+    }
+
+    outputEl.innerText =
+`Detected: ${category.name}
+${category.scanLine}
+
+Tip:
+${tip}
+
+FOCUS SUPPORT SYSTEM: scan complete. What next?
+
+1) Another tip
+2) status
+3) laugh
+4) swift`;
   }
 
   step();
@@ -413,9 +478,11 @@ function startFocus() {
   resetModes();
   focusMode = true;
 
-  const tip = focusAll[Math.floor(Math.random() * focusAll.length)];
+  const category = focusCategories[Math.floor(Math.random() * focusCategories.length)];
+  const tip = category.pool[Math.floor(Math.random() * category.pool.length)];
+
   document.getElementById("stats").innerText = "";
-  loadThenShow(tip, focusMenu);
+  scanThenShow(category, tip);
 }
 
 function runSwift() {
