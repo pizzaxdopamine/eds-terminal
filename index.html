@@ -103,7 +103,7 @@
   dopamine regulation, and cognitive overload management.<br><br>
 
   Available commands:<br>
-  status | laugh | focus | swift | random<br><br>
+  status | laugh | focus | swift | help<br><br>
 
   Type command and press ENTER.
   </p>
@@ -324,15 +324,6 @@ const factPool = [
   return song;
 }
 
-  const messages = {
-  random: [
-    "Drink water.",
-    "Open ONE tab, not 37.",
-    "Small step = valid progress.",
-    "You are allowed to start messy."
-  ]
-}
-    
 let statusMode = false;
 let statusAnswers = [];
 let currentQuestion = 0;
@@ -440,6 +431,24 @@ if (statusMode) {
     const pool = focusAll[Math.floor(Math.random() * focusAll.length)];
 
     document.getElementById("output").innerText = pool;
+    document.getElementById("stats").innerText = "";
+
+    inputField.value = "";
+    return;
+  }
+
+  // HELP
+  if (input === "help") {
+    document.getElementById("output").innerText =
+`COMMAND OVERVIEW
+
+status → runs a short check-in and estimates focus, energy and chaos levels
+laugh  → humor module: roast mode, dad jokes or fun facts
+focus  → one grounding instruction for right now
+swift  → recommends a song for the current situation
+help   → shows this exact screen, in case future-you forgot
+
+Note: the system has been observed to behave differently under repeated identical input.`;
     document.getElementById("stats").innerText = "";
 
     inputField.value = "";
@@ -623,19 +632,19 @@ Actions:
   }
 
   // FALLBACK / UNKNOWN COMMAND
-    if (messages[input]) {
-    const list = messages[input];
-    const output = list[Math.floor(Math.random() * list.length)];
-
-    document.getElementById("output").innerText = "> " + output;
-  } else {
-    document.getElementById("output").innerText =
-      "Unknown command. Try: random, laugh, focus, swift, status";
-  }
+  document.getElementById("output").innerText =
+    "Unknown command. Try: help, status, laugh, focus, swift";
 
   document.getElementById("stats").innerText = "";
   inputField.value = "";
+  return;
   }
+
+  // FALLBACK FOR UNKNOWN COMMAND (not inside any active mode)
+  document.getElementById("output").innerText =
+    "Unknown command. Try: help, status, laugh, focus, swift";
+  document.getElementById("stats").innerText = "";
+  inputField.value = "";
 }
 
 // DOPAMINE STATUS SYSTEM
