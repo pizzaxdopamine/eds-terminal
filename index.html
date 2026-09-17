@@ -99,8 +99,16 @@
   <p>
   Hello TG.<br><br>
 
-  This system supports executive function recovery,<br>
-  dopamine regulation, and cognitive overload management.<br><br>
+  This system was built specifically for you, by someone who,<br>
+  statistically, talks to you about mental health more than<br>
+  about the weather. Efficiency was not the goal here. Curiosity was.<br><br>
+
+  Disclaimer: this system may contain traces of AI assistance.<br>
+  Side effects may include unexpected coherence.<br><br>
+
+  Executive function recovery, dopamine regulation, and cognitive<br>
+  overload management are supported. Results may vary.<br>
+  Exploration is encouraged.<br><br>
 
   Available commands:<br>
   status | laugh | focus | swift | help<br><br>
@@ -141,8 +149,8 @@ function typeBoot(text) {
 
   function type() {
     if (i < text.length) {
-      document.getElementById("boot").innerText += text.charAt(i);
       i++;
+      document.getElementById("boot").innerText = text.slice(0, i);
       setTimeout(type, 30);
     } else {
       document.getElementById("main").style.display = "block";
