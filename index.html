@@ -70,6 +70,16 @@
       overflow-wrap: break-word;
     }
 
+    .toggle {
+      background: none;
+      border: none;
+      padding: 4px 0;
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      opacity: 0.7;
+      text-decoration: underline;
+    }
+
     .stats {
       margin-top: 20px;
       opacity: 0.8;
@@ -96,7 +106,9 @@
   
   <h1>Emergency Dopamine System</h1>
 
-  <p>
+  <button class="toggle" id="introToggle" onclick="toggleIntro()">[-] hide intro</button>
+
+  <p id="intro">
   Hello TG.<br><br>
 
   This system was built specifically for you, by someone who,<br>
@@ -110,12 +122,14 @@
   overload management are supported. Results may vary.<br>
   Exploration is encouraged.<br><br>
 
+
+  </p>
+  <p id="commands">
   Available commands:<br>
   status | focus | swift | play | help<br><br>
 
   Type command and press ENTER.
   </p>
-
 
   <div class="input-row">
     <input id="cmd" onkeydown="handleKey(event)" autocomplete="off" autocapitalize="off">
@@ -136,15 +150,27 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
-
 ████████░░ 82%
-
 System ready.
 `;
 
 window.onload = function () {
   typeBoot(bootText);
 };
+
+let introCollapsed = false;
+let introAutoCollapsed = false;
+
+function setIntroCollapsed(collapsed) {
+  introCollapsed = collapsed;
+  document.getElementById("boot").style.display = collapsed ? "none" : "";
+  document.getElementById("intro").style.display = collapsed ? "none" : "";
+  document.getElementById("introToggle").innerText = collapsed ? "[+] show intro" : "[-] hide intro";
+}
+
+function toggleIntro() {
+  setIntroCollapsed(!introCollapsed);
+}
 
 function typeBoot(text) {
   let i = 0;
@@ -771,8 +797,7 @@ Narrator: "That was private. The narrator would like a moment."`
 
 Lieber Thorben,
 
-wenn du das hier liest, hast du dich ganz schön weit durchgeklickt.
-Zu deinem 40. Geburtstag habe ich dir das EDS (Emergency Dopamine System) gebaut, um in erster Linie einfach Danke zu sagen. Für alle Gespräche, die wir hatten, für jede Unterstützung, dein Zuhören und dafür, dass du mich zum Lachen bringst. Ich hoffe, ich kann dir auf diesem Weg etwas zurückgeben, auch wenn wir uns nicht so oft sprechen oder treffen.
+wenn du das hier liest, hast du dich ganz schön weit durchgeklickt. Zu deinem 40. Geburtstag habe ich dir das EDS (Emergency Dopamine System) gebaut, um in erster Linie einfach Danke zu sagen. Für alle Gespräche, die wir hatten, für jede Unterstützung, dein Zuhören und dafür, dass du mich zum Lachen bringst. Ich hoffe, ich kann dir auf diesem Weg etwas zurückgeben, auch wenn wir uns nicht so oft sprechen oder treffen.
 
 Ich wünsche dir für deinen weiteren Lebensweg nur das Allerbeste, mit ganz vielen lieben Menschen um dich herum.
 
@@ -1151,6 +1176,12 @@ function runCommand() {
 const rawInput = document.getElementById("cmd").value.trim();
 const input = rawInput.toLowerCase();
 const inputField = document.getElementById("cmd");
+
+  // fold the intro away on the first command; afterwards only the toggle changes it
+  if (rawInput !== "" && !introAutoCollapsed) {
+    introAutoCollapsed = true;
+    setIntroCollapsed(true);
+  }
 
   let output = "";
 // STATUS CHECK
