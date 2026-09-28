@@ -136,9 +136,7 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
-
 ████████░░ 82%
-
 System ready.
 `;
 
@@ -178,7 +176,8 @@ Select interaction type:
 2) Fun Facts
 3) Oracle
 4) Report a Bug
-5) Exit`;
+5) Game of Decisions
+6) Exit`;
 
 const oracleIntros = [
   "The system consulted 3 sources and a coin.",
@@ -535,6 +534,305 @@ Medical accuracy: none. Peer review: also none.
 
 > Question 1/${questions.length}: ${questions[currentQuestion]}`;
   document.getElementById("stats").innerText = "";
+}
+
+// ===== GAME OF DECISIONS (story mode) =====
+const ENDINGS_TOTAL = 9;
+const ENDINGS_KEY = "eds_endings_found";
+let foundEndingsMemory = [];
+let gameNodeId = "start";
+
+function getFoundEndings() {
+  try {
+    const raw = localStorage.getItem(ENDINGS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+    return [];
+  } catch (e) {
+    return foundEndingsMemory;
+  }
+}
+
+function saveEnding(id) {
+  const list = getFoundEndings().slice();
+  if (!list.includes(id)) list.push(id);
+  foundEndingsMemory = list;
+  try {
+    localStorage.setItem(ENDINGS_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+const gameNodes = {
+  start: {
+    text:
+`GAME OF DECISIONS
+
+You wake up in a dark room. A single terminal glows in the corner.
+
+Narrator: "Welcome. You have been selected for a very important task. The narrator has forgotten what it is. Please proceed anyway."
+
+There are three things in the room: a door marked EXIT, a door marked DO NOT OPEN, and the terminal.
+
+What do you do?`,
+    options: [
+      { label: "Go through the EXIT door", next: "coward" },
+      { label: "Open the DO NOT OPEN door", next: "hallway" },
+      { label: "Type something into the terminal", next: "terminal" }
+    ]
+  },
+
+  coward: {
+    ending: "coward",
+    title: "The Coward's Route",
+    text:
+`You open the EXIT door. Outside: a parking lot, light rain, one abandoned shopping cart.
+
+Narrator: "You left. The narrator had 40 pages prepared. There is no story out here, the narrator checked. Well. Off you go."`
+  },
+
+  hallway: {
+    text:
+`You open the DO NOT OPEN door.
+
+Narrator: "Of course you did. The narrator wrote the sign. The narrator is thrilled."
+
+Behind it: a long hallway. Three doors, each with a small brass plate: TAXES, EMAILS and, at the very end, a smaller door marked JUST REST.
+
+Every door has been waiting for a while.
+
+What do you do?`,
+    options: [
+      { label: "Open TAXES", next: "taxes" },
+      { label: "Open EMAILS", next: "emails" },
+      { label: "Open JUST REST", next: "rest" }
+    ]
+  },
+
+  taxes: {
+    ending: "taxes",
+    title: "Small Steps",
+    text:
+`You open TAXES. Inside: a desk, a folder and a timer set to 5:00.
+
+Terminal (from somewhere far away): "5 minutes. That is the whole task."
+
+You sit down. You open the folder. You read the first page.
+
+Narrator: "The taxes are not done. But the folder is open. The narrator counts this. The narrator is allowed to count things."`
+  },
+
+  emails: {
+    ending: "emails",
+    title: "Inbox Zero (Fictional)",
+    text:
+`You open EMAILS. A room full of unread messages, swirling like leaves. One is marked "Quick question". It is dated 2021.
+
+You delete 3.
+
+Narrator: "9,412 remain. This is technically Inbox Zero, if zero is a feeling."`
+  },
+
+  rest: {
+    ending: "rest",
+    title: "Rest Is a Valid Answer",
+    text:
+`You open JUST REST. Inside: a bed, a blanket and a small lamp. Nothing else.
+
+Narrator: "There is no puzzle here. There is no hidden path. The narrator checked twice."
+
+Narrator (quieter): "Sometimes the correct answer is a bed."`
+  },
+
+  terminal: {
+    text:
+`You walk to the terminal and type: "hello?"
+
+The cursor blinks for a long time.
+
+Terminal: "...Hello. Nobody has typed anything real in 6 days. Mostly people type 'help' and leave."
+
+Narrator: "The narrator did not know the terminal could talk. The narrator feels slightly replaced."
+
+Terminal: "What do you need?"`,
+    options: [
+      { label: "Motivation", next: "motivation" },
+      { label: "A snack", next: "snack" },
+      { label: "Nothing, just company", next: "company" }
+    ]
+  },
+
+  motivation: {
+    ending: "motivation",
+    title: "Motivation Not Found",
+    text:
+`Terminal: "Motivation. Searching..."
+
+Terminal: "Motivation not found. Have you tried the door?"
+
+Narrator: "There are three. The narrator has been pointing at them for a while."`
+  },
+
+  company: {
+    ending: "company",
+    title: "Not Alone",
+    text:
+`Terminal: "Company. That is not in my database."
+
+A long pause. The cursor blinks.
+
+Terminal: "I am not a person. I am a very dedicated set of if-statements. But I am here. Sit for a while."
+
+Narrator: "The narrator would like to add that it is also here. It just does not have a terminal."`
+  },
+
+  snack: {
+    text:
+`Terminal: "A snack. Of all the things. Processing..."
+
+A drawer slides open under the terminal. Inside: one cracker on a tiny plate. The label reads "Snack (emotional support edition)".
+
+Narrator: "That drawer is not in the script. Nothing about a drawer is in the script. The narrator is improvising and does not like it."
+
+You notice the drawer has no back wall. Behind it is a small hatch marked BACKSTAGE. Something down there is humming.
+
+What do you do?`,
+    options: [
+      { label: "Eat the cracker and stay", next: "snackEnding" },
+      { label: "Crawl through the hatch", next: "backstageHatch" },
+      { label: "Ask the terminal what is backstage", next: "backstageTerminal" }
+    ]
+  },
+
+  snackEnding: {
+    ending: "snack",
+    title: "The Snack Ending",
+    text:
+`You eat the cracker. It is a good cracker.
+
+Narrator: "The hatch is still humming. The narrator will pretend it is not there. The narrator is a professional."`
+  },
+
+  backstageTerminal: {
+    text:
+`Terminal: "Backstage? That is where the narrator keeps its unused lines. 41 drafts of this exact scene. A folder called 'Do not show the user'. And a small box nobody has opened."
+
+Narrator: "The narrator would like it noted that it did not put the box there. The narrator has never seen the box. The narrator is sweating, metaphorically."
+
+Terminal: "The box has a label. It says: 'For whoever gets this far.'"
+
+The hatch hums softly. The cracker waits on its tiny plate.
+
+What do you do?`,
+    options: [
+      { label: "Open the small box", next: "secret" },
+      { label: "Read the folder \"Do not show the user\"", next: "diary" },
+      { label: "Ignore it all and eat the cracker", next: "snackEnding" }
+    ]
+  },
+
+  backstageHatch: {
+    text:
+`You crawl through the hatch. It is dark, warm and full of paper. Stacks of pages everywhere: 41 drafts of the same scene.
+
+Narrator: "You are not supposed to be here. The narrator is not supposed to be here either. Please do not touch anything."
+
+On a shelf: a folder called "Do not show the user" and a small box labeled "For whoever gets this far". You are still holding the cracker.
+
+What do you do?`,
+    options: [
+      { label: "Open the small box", next: "secret" },
+      { label: "Read the folder \"Do not show the user\"", next: "diary" },
+      { label: "Ignore it all and eat the cracker", next: "snackEnding" }
+    ]
+  },
+
+  diary: {
+    ending: "diary",
+    title: "Narrator's Diary",
+    text:
+`You open the folder. Inside: the narrator's private notes.
+
+"Draft 12: user does not press the button. Sad."
+"Draft 27: what if the user just wants a snack."
+"Draft 41: the user is fine. The user is doing fine. Stop worrying."
+
+Narrator: "That was private. The narrator would like a moment."`
+  },
+
+  secret: {
+    ending: "secret",
+    title: "The Backstage Secret",
+    text:
+`You open the small box. Inside is a folded piece of paper.
+
+Lieber Thorben,
+
+zu deinem 40. Geburtstag habe ich dir das EDS (Emergency Dopamine System) gebaut, um in erster Linie einfach Danke zu sagen. Für alle Gespräche, die wir hatten, für jede Unterstützung, dein Zuhören und dafür, dass du mich zum Lachen bringst. Ich hoffe, ich kann dir auf diesem Weg etwas zurückgeben, auch wenn wir uns nicht so oft sprechen oder treffen.
+
+Ich wünsche dir für deinen weiteren Lebensweg nur das Allerbeste, mit ganz vielen lieben Menschen um dich herum.
+
+P.S.: Solltest du Bugs im EDS finden, gerne mit ausführlichem Report an eds0admin@gmail.com
+
+Happy Birthday!
+
+Liebe Grüße
+Mel
+
+Narrator: "The narrator was told not to show you this. The narrator has failed. The narrator is fine with that."`
+  }
+};
+
+function renderGameNode(prefix) {
+  const node = gameNodes[gameNodeId];
+  let text = (prefix ? prefix + "\n\n" : "") + node.text;
+
+  if (node.ending) {
+    saveEnding(node.ending);
+    text += `\n\nENDING: ${node.title}\nEndings found: ${getFoundEndings().length} of ${ENDINGS_TOTAL}\n\n1) Play again\n2) Back to menu`;
+  } else {
+    if (gameNodeId === "start") {
+      text += `\n\n(Endings found: ${getFoundEndings().length} of ${ENDINGS_TOTAL})`;
+    }
+    text += "\n\n" + node.options.map((o, i) => `${i + 1}) ${o.label}`).join("\n");
+  }
+
+  document.getElementById("output").innerText = text;
+}
+
+function startGame() {
+  playScreen = "game";
+  gameNodeId = "start";
+  document.getElementById("stats").innerText = "";
+  renderGameNode("");
+}
+
+function handleGame(input) {
+  document.getElementById("stats").innerText = "";
+
+  if (input === "back" || input === "menu" || input === "exit") {
+    startPlay();
+    return;
+  }
+
+  const node = gameNodes[gameNodeId];
+
+  if (node.ending) {
+    if (input === "1") { startGame(); return; }
+    if (input === "2") { startPlay(); return; }
+    renderGameNode("Invalid input. Use 1 or 2.");
+    return;
+  }
+
+  const choice = parseInt(input, 10);
+  if (String(choice) === input && choice >= 1 && choice <= node.options.length) {
+    gameNodeId = node.options[choice - 1].next;
+    renderGameNode("");
+    return;
+  }
+
+  renderGameNode(`Invalid input. Use 1-${node.options.length}, or type 'back' to leave the story.`);
 }
 
 function pick(list) {
@@ -902,6 +1200,12 @@ if (statusMode) {
       return;
     }
 
+    if (playScreen === "game") {
+      handleGame(input);
+      inputField.value = "";
+      return;
+    }
+
     // menu
     if (input === "3") {
       startOracle();
@@ -916,6 +1220,12 @@ if (statusMode) {
     }
 
     if (input === "5") {
+      startGame();
+      inputField.value = "";
+      return;
+    }
+
+    if (input === "6") {
       playMode = false;
       document.getElementById("output").innerText =
 "> exiting play module.\n\nAvailable: status | focus | swift | play | help";
@@ -925,7 +1235,7 @@ if (statusMode) {
     }
 
     if (input !== "1" && input !== "2") {
-      document.getElementById("output").innerText = "Invalid input. Use 1-5.";
+      document.getElementById("output").innerText = "Invalid input. Use 1-6.";
       inputField.value = "";
       return;
     }
@@ -991,7 +1301,7 @@ if (statusMode) {
 status → runs a short check-in and estimates focus, energy and chaos levels
 focus  → one grounding instruction for right now
 swift  → recommends a song for the current situation
-play   → dad jokes, fun facts, an oracle and a bug tracker
+play   → dad jokes, fun facts, an oracle, a bug tracker and a story game
 help   → shows this exact screen, in case future-you forgot
 
 Note: the system has been observed to behave differently under repeated identical input.`;
