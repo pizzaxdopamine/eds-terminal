@@ -111,7 +111,7 @@
   Exploration is encouraged.<br><br>
 
   Available commands:<br>
-  status | laugh | focus | swift | help<br><br>
+  status | focus | swift | play | help<br><br>
 
   Type command and press ENTER.
   </p>
@@ -136,7 +136,9 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
+
 ████████░░ 82%
+
 System ready.
 `;
 
@@ -167,35 +169,78 @@ const questions = [
   "How overwhelmed do you feel (0-10)?"
 ];
   
-const laughMenu =
-`SYSTEM HUMOR ENGINE ONLINE
+const playMenu =
+`PLAY MODULE ONLINE
 
 Select interaction type:
 
-1) Roast Mode
-2) Dad Joke Mode
-3) Fun Facts
-4) Exit`;
+1) Dad Jokes
+2) Fun Facts
+3) Oracle
+4) Report a Bug
+5) Exit`;
 
-const roastPool = [
-  "You are currently delaying reality with great consistency.",
-  "Noted: avoidance pattern detected again.",
-  "This is not multitasking. This is organized procrastination.",
-  "Your productivity is technically present, but emotionally unavailable.",
-  "You opened this instead of doing the thing. Again.",
-  "This is less 'busy' and more 'strategically avoiding consequences'.",
-  "Your focus is in a different tab and refuses to return.",
-  "You are running on intentions and optimism. No execution detected.",
-  "You are not stuck. You are just repeatedly choosing the same outcome.",
-  "Your task list is longer than your follow-through history.",
-  "At this point, hesitation is your default operating system.",
-  "You are successfully simulating productivity without any output.",
-  "You keep refreshing your options instead of selecting one.",
-  "This is a very advanced form of doing nothing intentionally.",
-  "You are currently outsourcing discipline to future-you. Future-you has filed a complaint.",
-  "You said ‘just a quick break’. The system has recorded 3 hours.",
-  "The system notices your presence. It chooses not to comment further.",
-  "You are still here. Statistically unexpected, but noted."
+const oracleIntros = [
+  "The system consulted 3 sources and a coin.",
+  "The system consulted a committee. The committee took a break.",
+  "The system consulted its inner monologue. It was busy.",
+  "The system consulted the archives. The archives are mostly vibes."
+];
+
+const oracleVerdicts = [
+  "Technically yes. Spiritually also yes. Practically: start badly.",
+  "Sources disagree. The coin rolled under the desk. Inconclusive.",
+  "The system has an opinion but chooses not to share it.",
+  "Yes. But not in the way you are hoping.",
+  "No. But the system admires the optimism.",
+  "Signs point to yes. The signs are also confused.",
+  "Ask again after a glass of water.",
+  "Probably. The system is 62% confident. The other 38% is noise.",
+  "Answer withheld. Reason: dramatic effect.",
+  "Yes. Do it before you think about it again.",
+  "No. Also, you are asking a browser tab. Keep that in mind."
+];
+
+const ticketPriorities = [
+  "high",
+  "critical",
+  "medium",
+  "low (but emotionally loud)",
+  "urgent, but only to you"
+];
+
+const ticketStatuses = [
+  "won't fix",
+  "needs more information",
+  "closed: user error",
+  "works as intended",
+  "in progress (nobody is working on it)",
+  "blocked by: Monday",
+  "reopened by reality"
+];
+
+const ticketAssignees = [
+  "nobody",
+  "the intern (does not exist)",
+  "future-you",
+  "the system (reluctantly)",
+  "unassigned, but watching"
+];
+
+const ticketComments = [
+  "Works on my machine.",
+  "Cannot reproduce. Have you tried being less tired?",
+  "Possible root cause: Monday.",
+  "Known issue. Ships with the human.",
+  "Reported by user. Not reproducible by system."
+];
+
+const ticketWorkarounds = [
+  "Drink water. Restart human if issue persists.",
+  "Stand up. Walk to the kitchen. Return with intent.",
+  "Do the smallest possible step. Document nothing.",
+  "Sleep. Try again tomorrow. Repeat as needed.",
+  "Eat something. The bug may be a snack."
 ];
 
 const dadJokePool = [
@@ -350,15 +395,43 @@ const factPool = [
 let statusMode = false;
 let statusAnswers = [];
 let currentQuestion = 0;
-let laughMode = false;
-let laughStep = 0;
-let laughSelection = "";
+let statusRunCount = 0;
+let playMode = false;
+let playScreen = "menu";
+let jokeRepeatCount = 0;
+let oracleTotal = 0;
+let oracleSinceError = 0;
+let edsQuestionCount = 0;
+let edsStage = 0; // 0 = normal, 1 = error just shown, 2 = "too late" given
+let ticketCount = 0;
+let lastTicket = null;
+let helpRepeatCount = 0;
 let focusMode = false;
 let swiftMode = false;
 let currentSong = null;
 let usedSwiftSongs = [];
 let swiftAction2Count = 0;
 let swiftCount = 0;
+
+const jokeFatiguePool = [
+  "SYSTEM: humor buffer running low. That is a lot of jokes in a row. Give the database a second to recover.",
+  "SYSTEM: joke quality assurance department is unionizing. Please stand by.",
+  "SYSTEM: mild offense taken. None of the previous jokes seem to have landed. Generating new material..."
+];
+
+const statusFatiguePool = [
+  "Doing the same thing repeatedly and expecting a different result has a name. Look it up.",
+  "This is the third check today. The system suspects you already know the answer.",
+  "Repeated diagnostics detected. Statistically, checking again does not change reality."
+];
+
+const helpFatiguePool = [
+  "It's still the same five commands. They have not changed. They will not change.",
+  "Memorization was always optional. Judgment was not.",
+  "At this rate, printing this out and taping it to the monitor might genuinely be faster.",
+  "The system would offer a sixth command, but has none. This is the whole list.",
+  "If help is needed this badly, a more intelligent system than this one may exist. This is not it."
+];
 
 const scanFailReasons = [
   "Subject blinked at critical moment.",
@@ -369,7 +442,7 @@ const scanFailReasons = [
 
 function resetModes() {
   statusMode = false;
-  laughMode = false;
+  playMode = false;
   focusMode = false;
   swiftMode = false;
 }
@@ -424,7 +497,7 @@ FOCUS SUPPORT SYSTEM: no result. What next?
 
 1) Retry scan
 2) status
-3) laugh
+3) play
 4) swift`;
       return;
     }
@@ -440,7 +513,7 @@ FOCUS SUPPORT SYSTEM: scan complete. What next?
 
 1) Another tip
 2) status
-3) laugh
+3) play
 4) swift`;
   }
 
@@ -464,14 +537,228 @@ Medical accuracy: none. Peer review: also none.
   document.getElementById("stats").innerText = "";
 }
 
-function startLaugh() {
-  resetModes();
-  laughMode = true;
-  laughStep = 0;
-  laughSelection = "";
+function pick(list) {
+  return list[Math.floor(Math.random() * list.length)];
+}
 
-  document.getElementById("output").innerText = laughMenu;
+function animateThenShow(frames, finalText, delay) {
+  const outputEl = document.getElementById("output");
+  let i = 0;
+
+  function step() {
+    if (i < frames.length) {
+      outputEl.innerText = frames[i];
+      i++;
+      setTimeout(step, delay);
+    } else {
+      outputEl.innerText = finalText;
+    }
+  }
+
+  step();
+}
+
+function startPlay() {
+  resetModes();
+  playMode = true;
+  playScreen = "menu";
+  edsStage = 0;
+
+  document.getElementById("output").innerText = playMenu;
   document.getElementById("stats").innerText = "";
+}
+
+function startOracle() {
+  playScreen = "oracle";
+  edsStage = 0;
+
+  document.getElementById("output").innerText =
+`ORACLE ONLINE
+
+Ask the system a yes/no question.
+(Type 'back' to return to the menu.)`;
+  document.getElementById("stats").innerText = "";
+}
+
+function startTicket() {
+  playScreen = "ticket";
+
+  document.getElementById("output").innerText =
+`BUG TRACKER ONLINE
+
+Describe the bug in your day.
+(Type 'back' to return to the menu.)`;
+  document.getElementById("stats").innerText = "";
+}
+
+function shorten(text, max) {
+  return text.length > max ? text.slice(0, max - 3) + "..." : text;
+}
+
+function handleOracle(rawInput, input) {
+  const outputEl = document.getElementById("output");
+  const backHint = "Ask another question, or type 'back' for the menu.";
+  document.getElementById("stats").innerText = "";
+
+  if (input === "back" || input === "menu" || input === "exit") {
+    startPlay();
+    return;
+  }
+
+  // 1) empty input
+  if (input === "") {
+    outputEl.innerText =
+      "No question detected. The system cannot answer silence. It has tried.\n\n" + backHint;
+    return;
+  }
+
+  const questionWords = [
+    "what", "why", "how", "when", "where", "who", "which",
+    "warum", "wie", "wann", "wo", "wer", "welche", "welcher", "welches",
+    "wieso", "weshalb", "wozu", "womit", "wofür"
+  ];
+  const firstWord = input.split(/\s+/)[0].replace(/[^a-zäöüß]/g, "");
+  const isOpenQuestion = questionWords.includes(firstWord);
+
+  // 2) question about the EDS itself (takes priority over the format check)
+  const asksAboutEds =
+    /\beds\b|emergency dopamine system|are you (ok|okay|alright)|how are you|you okay|wie geht|geht.?s dir|geht es dir|alles gut bei dir/.test(input);
+
+  if (asksAboutEds) {
+    let reaction;
+
+    if (edsStage === 1) {
+      reaction =
+"Too little. Too late.\nThe system has moved on. Processing feelings takes 3 to 5 business days.";
+      edsStage = 2;
+    } else if (edsStage === 2) {
+      reaction =
+"...The system appreciates the follow-up.\nStatus: fine. Marginally better than before. Please ask something real now.";
+      edsStage = 0;
+    } else if (edsQuestionCount === 0) {
+      reaction =
+"Query not in expected category.\nThe system is... fine. Nobody has asked that before.\nLogging as anomaly. Logging as slightly nice.";
+    } else {
+      reaction =
+"The EDS is fine. Slightly suspicious of your motives, but fine.";
+    }
+
+    edsQuestionCount++;
+
+    const exception = isOpenQuestion ? "Not a yes/no question. Exception granted.\n\n" : "";
+    outputEl.innerText = exception + reaction + "\n\n" + backHint;
+    return;
+  }
+
+  // 3) format check: obvious open questions are rejected (and not counted)
+  if (isOpenQuestion) {
+    outputEl.innerText =
+`Format violation.
+This oracle accepts yes/no questions only. Try: "Should I start now?"
+
+` + backHint;
+    return;
+  }
+
+  // 4) normal question
+  oracleTotal++;
+  oracleSinceError++;
+
+  const forcedError = oracleSinceError >= 5;
+  const randomError = oracleSinceError >= 2 && Math.random() < 0.15;
+
+  if (forcedError || randomError) {
+    oracleSinceError = 0;
+    const fullVersion = forcedError || Math.random() < 0.5;
+
+    if (!fullVersion) {
+      outputEl.innerText =
+"ERROR: too many questions asked. Please try again after reflecting on your choices.\n\n" + backHint;
+      edsStage = 0;
+      return;
+    }
+
+    if (edsQuestionCount === 0) {
+      outputEl.innerText =
+`ERROR: too many questions asked.
+
+Questions received this session: ${oracleTotal}
+Questions about how the EDS is doing: 0
+
+The system notes this. The system is fine. Thanks for not asking.
+
+` + backHint;
+      edsStage = 1;
+    } else {
+      outputEl.innerText =
+`ERROR: too many questions asked.
+
+Questions received this session: ${oracleTotal}
+Questions about how the EDS is doing: ${edsQuestionCount}
+
+The system notes this. Thank you for asking. It was noticed.
+
+` + backHint;
+      edsStage = 0;
+    }
+    return;
+  }
+
+  edsStage = 0;
+
+  animateThenShow(
+    ["Consulting sources.", "Consulting sources..", "Consulting sources..."],
+`Regarding "${shorten(rawInput, 100)}":
+
+${pick(oracleIntros)}
+Answer: ${pick(oracleVerdicts)}
+
+${backHint}`,
+    150
+  );
+}
+
+function handleTicket(rawInput, input) {
+  const outputEl = document.getElementById("output");
+  const backHint = "Report another bug, or type 'back' for the menu.";
+  document.getElementById("stats").innerText = "";
+
+  if (input === "back" || input === "menu" || input === "exit") {
+    startPlay();
+    return;
+  }
+
+  if (input === "") {
+    outputEl.innerText =
+      "No bug described. The system considers this a feature.\n\n" + backHint;
+    return;
+  }
+
+  ticketCount++;
+
+  const number = 1000 + Math.floor(Math.random() * 9000);
+  const title = shorten(rawInput, 80);
+
+  let status = pick(ticketStatuses);
+  if (lastTicket && Math.random() < 0.6) {
+    status = `duplicate of #${lastTicket.number} ("${lastTicket.title}")`;
+  }
+
+  lastTicket = { number: number, title: title };
+
+  animateThenShow(
+    ["Creating ticket.", "Creating ticket..", "Creating ticket..."],
+`TICKET #${number} CREATED
+Title: "${title}"
+Priority: ${pick(ticketPriorities)}
+Status: ${status}
+Assigned to: ${pick(ticketAssignees)}
+System comment: ${pick(ticketComments)}
+Workaround: ${pick(ticketWorkarounds)}
+
+${backHint}`,
+    150
+  );
 }
 
 function startFocus() {
@@ -560,7 +847,8 @@ Actions:
 }
 
 function runCommand() {
-const input = document.getElementById("cmd").value.trim().toLowerCase();
+const rawInput = document.getElementById("cmd").value.trim();
+const input = rawInput.toLowerCase();
 const inputField = document.getElementById("cmd");
 
   let output = "";
@@ -579,61 +867,83 @@ if (statusMode) {
       `> Question ${currentQuestion + 1}/${questions.length}: ${questions[currentQuestion]}`;
   } else {
     statusMode = false;
+    statusRunCount++;
     document.getElementById("stats").innerText = generateStatus(statusAnswers);
-    document.getElementById("output").innerText = "> Status complete.";
+
+    let completeMsg = "> Status complete.";
+    if (statusRunCount >= 3) {
+      const remark = statusFatiguePool[Math.floor(Math.random() * statusFatiguePool.length)];
+      completeMsg += `\n\n(Check #${statusRunCount} this session. ${remark})`;
+    }
+    document.getElementById("output").innerText = completeMsg;
   }
 
   inputField.value = "";
   return;
 }
-  // LAUGH
-  if (input === "laugh") {
-    startLaugh();
+  // PLAY
+  if (input === "play") {
+    startPlay();
     inputField.value = "";
     return;
   }
 
-  if (laughMode) {
+  if (playMode && input !== "focus" && input !== "help" && input !== "swift") {
 
-    if (laughStep === 0) {
+    if (playScreen === "oracle") {
+      handleOracle(rawInput, input);
+      inputField.value = "";
+      return;
+    }
 
-      if (input === "1") laughSelection = "roast";
-      else if (input === "2") laughSelection = "dad";
-      else if (input === "3") laughSelection = "facts";
-      else if (input === "4") {
-        laughMode = false;
-        laughStep = 0;
-        document.getElementById("output").innerText = "> exiting humor module.";
-        inputField.value = "";
-        return;
-      } else {
-        document.getElementById("output").innerText = "Invalid input. Use 1–4.";
-        inputField.value = "";
-        return;
-      }
+    if (playScreen === "ticket") {
+      handleTicket(rawInput, input);
+      inputField.value = "";
+      return;
+    }
 
-      laughStep = 1;
+    // menu
+    if (input === "3") {
+      startOracle();
+      inputField.value = "";
+      return;
+    }
+
+    if (input === "4") {
+      startTicket();
+      inputField.value = "";
+      return;
+    }
+
+    if (input === "5") {
+      playMode = false;
+      document.getElementById("output").innerText =
+"> exiting play module.\n\nAvailable: status | focus | swift | play | help";
+      document.getElementById("stats").innerText = "";
+      inputField.value = "";
+      return;
+    }
+
+    if (input !== "1" && input !== "2") {
+      document.getElementById("output").innerText = "Invalid input. Use 1-5.";
+      inputField.value = "";
+      return;
     }
 
     let result = "";
+    jokeRepeatCount++;
 
-    if (laughSelection === "roast") {
-      result = roastPool[Math.floor(Math.random() * roastPool.length)];
+    if (jokeRepeatCount >= 5) {
+      result = pick(jokeFatiguePool);
+      jokeRepeatCount = 0;
+    } else if (input === "1") {
+      result = pick(dadJokePool);
+    } else {
+      result = pick(factPool);
     }
 
-    if (laughSelection === "dad") {
-      result = dadJokePool[Math.floor(Math.random() * dadJokePool.length)];
-    }
-
-    if (laughSelection === "facts") {
-      result = factPool[Math.floor(Math.random() * factPool.length)];
-    }
-
-    laughStep = 0;
-    laughSelection = "";
     inputField.value = "";
-
-    loadThenShow(result, laughMenu);
+    loadThenShow(result, playMenu);
     return;
   }
  
@@ -644,7 +954,7 @@ if (statusMode) {
     return;
   }
 
-  if (focusMode) {
+  if (focusMode && input !== "help" && input !== "swift") {
     if (input === "1") {
       startFocus();
       inputField.value = "";
@@ -656,7 +966,7 @@ if (statusMode) {
       return;
     }
     if (input === "3") {
-      startLaugh();
+      startPlay();
       inputField.value = "";
       return;
     }
@@ -673,16 +983,25 @@ if (statusMode) {
 
   // HELP
   if (input === "help") {
-    document.getElementById("output").innerText =
+    helpRepeatCount++;
+
+    let helpText =
 `COMMAND OVERVIEW
 
 status → runs a short check-in and estimates focus, energy and chaos levels
-laugh  → humor module: roast mode, dad jokes or fun facts
 focus  → one grounding instruction for right now
 swift  → recommends a song for the current situation
+play   → dad jokes, fun facts, an oracle and a bug tracker
 help   → shows this exact screen, in case future-you forgot
 
 Note: the system has been observed to behave differently under repeated identical input.`;
+
+    if (helpRepeatCount >= 3) {
+      const remark = helpFatiguePool[Math.floor(Math.random() * helpFatiguePool.length)];
+      helpText += `\n\n(Help requested ${helpRepeatCount} times now. ${remark})`;
+    }
+
+    document.getElementById("output").innerText = helpText;
     document.getElementById("stats").innerText = "";
 
     inputField.value = "";
@@ -795,7 +1114,7 @@ Actions:
 
   // FALLBACK / UNKNOWN COMMAND
   document.getElementById("output").innerText =
-    "Unknown command. Try: help, status, laugh, focus, swift";
+    "Unknown command. Try: help, status, focus, swift, play";
 
   document.getElementById("stats").innerText = "";
   inputField.value = "";
@@ -804,7 +1123,7 @@ Actions:
 
   // FALLBACK FOR UNKNOWN COMMAND (not inside any active mode)
   document.getElementById("output").innerText =
-    "Unknown command. Try: help, status, laugh, focus, swift";
+    "Unknown command. Try: help, status, focus, swift, play";
   document.getElementById("stats").innerText = "";
   inputField.value = "";
 }
