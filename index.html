@@ -120,16 +120,16 @@
 
   Executive function recovery, dopamine regulation, and cognitive<br>
   overload management are supported. Results may vary.<br>
-  Exploration is encouraged.<br><br>
-
-
+  Exploration is encouraged.
   </p>
-  <p id="commands">
+
+  <p id="introAlwaysVisible">
   Available commands:<br>
   status | focus | swift | play | help<br><br>
 
   Type command and press ENTER.
   </p>
+
 
   <div class="input-row">
     <input id="cmd" onkeydown="handleKey(event)" autocomplete="off" autocapitalize="off">
@@ -150,7 +150,9 @@ const bootText = `
 Booting Emergency Dopamine System...
 Initializing cognitive modules...
 Loading dopamine stabilizer...
+
 ████████░░ 82%
+
 System ready.
 `;
 
@@ -441,9 +443,9 @@ let swiftAction2Count = 0;
 let swiftCount = 0;
 
 const jokeFatiguePool = [
-  "SYSTEM: humor buffer running low. That is a lot of jokes in a row. Give the database a second to recover.",
-  "SYSTEM: joke quality assurance department is unionizing. Please stand by.",
-  "SYSTEM: mild offense taken. None of the previous jokes seem to have landed. Generating new material..."
+  "Humor buffer running low. That is a lot of jokes in a row. Give the database a second to recover.",
+  "The joke quality assurance department is unionizing. Please stand by.",
+  "Mild offense taken. None of the previous jokes have landed. Generating new material..."
 ];
 
 const statusFatiguePool = [
@@ -487,7 +489,7 @@ function loadThenShow(mainText, trailingText) {
       setTimeout(step, 150);
     } else {
       outputEl.innerText =
-        mainText + "\n\nCompleted." + (trailingText ? "\n\n" + trailingText : "");
+        mainText + (trailingText ? "\n\n" + trailingText : "");
     }
   }
 
@@ -557,6 +559,7 @@ function startStatus() {
 `STATUS CHECK INITIATED
 
 3 questions incoming. Type your answer, then press ENTER.
+(Type 'back' at any point to cancel.)
 Afterwards the system calculates focus, energy and chaos levels.
 Medical accuracy: none. Peer review: also none.
 
@@ -1135,10 +1138,14 @@ ${easterEggSong.category}
 Reason:
 ${easterEggSong.reason}
 
-Actions:
+SWIFT RECOVERY MODULE: recommendation ready. What next?
+
 1) Execute Spotify Audio Protocol
-2) Another Recommendation
-3) Exit`;
+2) Another recommendation
+3) status
+4) play
+5) focus
+6) Exit`;
 
     swiftCount = 0;
     return;
@@ -1166,10 +1173,14 @@ ${song.reason}
 Suggested action:
 ${song.action}
 
-Actions:
+SWIFT RECOVERY MODULE: recommendation ready. What next?
+
 1) Execute Spotify Audio Protocol
-2) Another Recommendation
-3) Exit`;
+2) Another recommendation
+3) status
+4) play
+5) focus
+6) Exit`;
 }
 
 function runCommand() {
@@ -1191,6 +1202,15 @@ const inputField = document.getElementById("cmd");
   return;
 }
 if (statusMode) {
+  if (input === "back" || input === "cancel" || input === "exit") {
+    statusMode = false;
+    document.getElementById("output").innerText =
+      "> Status check cancelled.\n\nAvailable: status | focus | swift | play | help";
+    document.getElementById("stats").innerText = "";
+    inputField.value = "";
+    return;
+  }
+
   statusAnswers.push(input);
   currentQuestion++;
 
@@ -1287,7 +1307,15 @@ if (statusMode) {
     }
 
     inputField.value = "";
-    loadThenShow(result, playMenu);
+    loadThenShow(result,
+`PLAY MODULE: delivered. What next?
+
+1) Dad Jokes
+2) Fun Facts
+3) Oracle
+4) Report a Bug
+5) Game of Decisions
+6) Exit`);
     return;
   }
  
@@ -1320,7 +1348,7 @@ if (statusMode) {
       return;
     }
 
-    document.getElementById("output").innerText = "Invalid input. Use 1–4.";
+    document.getElementById("output").innerText = "Invalid input. Use 1-4.";
     inputField.value = "";
     return;
   }
@@ -1404,10 +1432,14 @@ ${easterEggSong.category}
 Reason:
 ${easterEggSong.reason}
 
-Actions:
+SWIFT RECOVERY MODULE: recommendation ready. What next?
+
 1) Execute Spotify Audio Protocol
-2) Another Recommendation
-3) Exit`;
+2) Another recommendation
+3) status
+4) play
+5) focus
+6) Exit`;
 
     swiftAction2Count = 0;
     inputField.value = "";
@@ -1434,32 +1466,52 @@ ${song.reason}
 Suggested action:
 ${song.action}
 
-Actions:
+SWIFT RECOVERY MODULE: recommendation ready. What next?
+
 1) Execute Spotify Audio Protocol
-2) Another Recommendation
-3) Exit`;
+2) Another recommendation
+3) status
+4) play
+5) focus
+6) Exit`;
 
   inputField.value = "";
   return;
 }
 
-  // 3 = EXIT
+  // 3-5 = CROSS-NAVIGATION
   if (input === "3") {
+    startStatus();
+    inputField.value = "";
+    return;
+  }
+
+  if (input === "4") {
+    startPlay();
+    inputField.value = "";
+    return;
+  }
+
+  if (input === "5") {
+    startFocus();
+    inputField.value = "";
+    return;
+  }
+
+  // 6 = EXIT
+  if (input === "6") {
     swiftMode = false;
     currentSong = null;
     swiftAction2Count = 0;
 
     document.getElementById("output").innerText =
-"SWIFT RECOVERY MODULE closed.";
+"SWIFT RECOVERY MODULE closed.\n\nAvailable: status | focus | swift | play | help";
 
     inputField.value = "";
     return;
   }
 
-  // FALLBACK / UNKNOWN COMMAND
-  document.getElementById("output").innerText =
-    "Unknown command. Try: help, status, focus, swift, play";
-
+  document.getElementById("output").innerText = "Invalid input. Use 1-6.";
   document.getElementById("stats").innerText = "";
   inputField.value = "";
   return;
@@ -1491,9 +1543,9 @@ function generateStatus(a) {
   return `
 DOPAMINE STATUS (user-based)
 ---------------------------
-Focus:   ${focus}%
+Focus:  ${focus}%
 Energy: ${energy}%
-Chaos:   ${chaos}%
+Chaos:  ${chaos}%
 
 ${advice}
 (As previously disclosed: not medical advice. Not even close.)`;
